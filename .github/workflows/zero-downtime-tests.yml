@@ -545,8 +545,7 @@ jobs:
           
             echo "" >> zd-test-failed.md
             echo "Note: This issue was auto-generated from [zero-downtime-tests.yml](.github/workflows/zero-downtime-tests.yml)" >> zd-test-failed.md
-          
-            echo zd-test-failed.md
+            cat zd-test-failed.md
       - name: Create issue if tests failed
         if: always() && github.event_name == 'schedule' && steps.test_zero_downtime.outcome != 'success'
         uses: JasonEtco/create-an-issue@v2.6
