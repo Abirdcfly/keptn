@@ -390,9 +390,11 @@ jobs:
             exit 1
           fi
           echo "Zero Downtime go test finished"
-          
+      - name: Format go test for issue
+        if: always()
+        run: |
+          set -euo pipefail     
           tparse -all -file=/tmp/gotest.log | tee /tmp/gotest2.log
-
       - name: Format go test log output
         if: always()
         run: |
