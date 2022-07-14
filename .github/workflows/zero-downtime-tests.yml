@@ -353,7 +353,8 @@ jobs:
       - name: Prepare test run
         id: prepare_test_run
         working-directory: test/zero-downtime
-        run: | 
+        run: |
+         go install github.com/mfridman/tparse@latest 
          go get ./...
 
       #######################################################################
@@ -389,6 +390,8 @@ jobs:
             exit 1
           fi
           echo "Zero Downtime go test finished"
+          
+          tparse -all -file=/tmp/gotest.log | tee /tmp/gotest2.log
 
       - name: Format go test log output
         if: always()
@@ -479,7 +482,7 @@ jobs:
         if: always()
         with:
           name: go-test-log
-          path: /tmp/gotest.log
+          path: /tmp/gotest2.log
           if-no-files-found: error
 
       # Upload the original cypress test log as an artifact for later review.
