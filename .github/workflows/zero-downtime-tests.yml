@@ -403,10 +403,6 @@ jobs:
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
             cat /tmp/uitest.log >> $GITHUB_STEP_SUMMARY
           fi
-           # adding emojis to test report
-            GITHUB_STEP_SUMMARY=$(echo "${GITHUB_STEP_SUMMARY//pass/:white_check_mark: pass}")
-            GITHUB_STEP_SUMMARY=$(echo "${GITHUB_STEP_SUMMARY//fail/:x: fail}")
-            GITHUB_STEP_SUMMARY=$(echo "${GITHUB_STEP_SUMMARY//skip/:yellow_circle: skip}")
 
       - name: Format go test log output
         if: always()
@@ -523,12 +519,13 @@ jobs:
           echo VERSION=${VERSION}
           echo BRANCH=${BRANCH}
 
+
       - name: Formulate bug issue on errors
         id: formulate_bug_issue
         if: always() && steps.test_zero_downtime.outcome != 'success'
         run: |
             echo "ZERO DOWNTIME TESTS FAILED! - Creating GH issue description now..."
-            REPORT=$(cat /tmp/gotest.log)
+            REPORT=$(cat /tmp/gotest2.log)
           
             # adding emojis to test report
             REPORT=$(echo "${REPORT//pass/:white_check_mark: pass}")
@@ -553,6 +550,7 @@ jobs:
             echo "* Version: $VERSION" >> zd-test-failed.md
             echo "* Datetime: $DATETIME" >> zd-test-failed.md
             echo "* Commit: $GIT_SHA" >> zd-test-failed.md
+            echo "* Upgraded to: $UPGRADE_HELM_CHART" >> zd-test-failed.md
             echo "" >> zd-test-failed.md
           
             # print report
