@@ -371,7 +371,7 @@ jobs:
         run: |
           set -euo pipefail 
           
-          go test -json -v -run Test_ZeroDowntime -v -timeout 90m 2>&1 | tee /tmp/gotest.log & GOTEST=$!
+          go test -json -v -run Test_ZeroDowntime -v -timeout 90m > /tmp/json.log & GOTEST=$!
 
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
@@ -393,13 +393,15 @@ jobs:
       - name: Format go test for issue
         if: always()
         run: |
-          set -euo pipefail     
-          tparse -all -file=/tmp/gotest.log | tee /tmp/gotest2.log
+          set -euo      
+          cat /tmp/json.log 2>&1 | tee /tmp/gotest.log
+          tparse -all -file=/tmp/json.log | tee /tmp/gotest2.log
+
       - name: Format go test log output
         if: always()
         run: |
           set -euo pipefail
-          cat /tmp/gotest.log | gotestfmt
+          cat /tmp/gotest2.log | gotestfmt
 
       - name: Format cypress log output
         if: always() && github.event.inputs.testUI == 'true'
