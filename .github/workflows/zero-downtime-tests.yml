@@ -394,14 +394,22 @@ jobs:
         if: always()
         run: |
           set -euo      
-          cat /tmp/json.log 2>&1 | tee /tmp/gotest.log
+          /tmp/json.log 2>&1 | tee /tmp/gotest.log
           tparse -all -file=/tmp/json.log | tee /tmp/gotest2.log
+
+      - name: Generate Github Summary
+        if: always()
+        run: |
+          cat /tmp/gotest2.log >> $GITHUB_STEP_SUMMARY
+          if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
+            cat /tmp/uitestlog >> $GITHUB_STEP_SUMMARY
+          fi
 
       - name: Format go test log output
         if: always()
         run: |
           set -euo pipefail
-          cat /tmp/gotest2.log | gotestfmt
+          cat /tmp/gotest.log | gotestfmt
 
       - name: Format cypress log output
         if: always() && github.event.inputs.testUI == 'true'
