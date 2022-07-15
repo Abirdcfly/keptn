@@ -354,7 +354,7 @@ jobs:
         id: prepare_test_run
         working-directory: test/zero-downtime
         run: |
-         go install github.com/mfridman/tparse@latest 
+         go install github.com/go-kit/kit/metrics/teststat@v0.12.0
          go get ./...
 
       #######################################################################
@@ -394,15 +394,19 @@ jobs:
         run: |
           set -euo      
           cat /tmp/json.log 2>&1 | tee /tmp/gotest.log
-          tparse -all -file=/tmp/json.log | tee /tmp/gotest2.log
+          cat /tmp/json.log | teststat -markdown | tee /tmp/gotest2.log
 
       - name: Generate Github Summary
         if: always()
         run: |
-          cat /tmp/gotest.log >> $GITHUB_STEP_SUMMARY
+          cat /tmp/gotest2.log >> $GITHUB_STEP_SUMMARY
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
-            cat /tmp/uitestlog >> $GITHUB_STEP_SUMMARY
+            cat /tmp/uitest.log >> $GITHUB_STEP_SUMMARY
           fi
+           # adding emojis to test report
+            GITHUB_STEP_SUMMARY=$(echo "${GITHUB_STEP_SUMMARY//pass/:white_check_mark: pass}")
+            GITHUB_STEP_SUMMARY=$(echo "${GITHUB_STEP_SUMMARY//fail/:x: fail}")
+            GITHUB_STEP_SUMMARY=$(echo "${GITHUB_STEP_SUMMARY//skip/:yellow_circle: skip}")
 
       - name: Format go test log output
         if: always()
