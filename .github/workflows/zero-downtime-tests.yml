@@ -354,7 +354,7 @@ jobs:
         id: prepare_test_run
         working-directory: test/zero-downtime
         run: |
-         go install github.com/go-kit/kit/metrics/teststat@v0.12.0
+         go install github.com/vearutop/teststat@v0.1.3
          go get ./...
 
       #######################################################################
