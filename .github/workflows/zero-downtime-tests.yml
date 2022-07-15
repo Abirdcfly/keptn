@@ -386,7 +386,6 @@ jobs:
           wait $GOTEST
           if [[ $GOTEST? -ne 0 ]]; then
             echo "::error::Zero Downtime go test failed - exiting"
-            echo "##[set-output name=FAILED;]$(echo true)"
             exit 1
           fi
           echo "Zero Downtime go test finished"
@@ -394,7 +393,7 @@ jobs:
         if: always()
         run: |
           set -euo      
-          /tmp/json.log 2>&1 | tee /tmp/gotest.log
+          cat /tmp/json.log 2>&1 | tee /tmp/gotest.log
           tparse -all -file=/tmp/json.log | tee /tmp/gotest2.log
 
       - name: Generate Github Summary
