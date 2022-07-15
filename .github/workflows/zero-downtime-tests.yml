@@ -412,9 +412,14 @@ jobs:
             echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
             echo "" >>$GITHUB_STEP_SUMMARY
           
+            echo "<details>" > $GITHUB_STEP_SUMMARY
             cat /tmp/gotest2.log >> $GITHUB_STEP_SUMMARY
+            echo "</details>" > $GITHUB_STEP_SUMMARY
+          
             if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
+              echo "<details>" > $GITHUB_STEP_SUMMARY
               cat /tmp/uitest.log >> $GITHUB_STEP_SUMMARY
+              echo "</details>" > $GITHUB_STEP_SUMMARY
             fi
 
       - name: Format go test log output
