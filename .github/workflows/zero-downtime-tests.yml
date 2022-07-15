@@ -394,7 +394,7 @@ jobs:
         run: |
           set -euo      
           cat /tmp/json.log 2>&1 | tee /tmp/gotest.log
-          cat /tmp/json.log | teststat -markdown | tee /tmp/gotest2.log
+          teststat -markdown /tmp/json.log | tee /tmp/gotest2.log
 
       - name: Generate Github Summary
         if: always()
