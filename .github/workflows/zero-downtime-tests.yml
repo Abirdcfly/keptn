@@ -399,7 +399,7 @@ jobs:
       - name: Generate Github Summary
         if: always()
         run: |
-          cat /tmp/gotest2.log >> $GITHUB_STEP_SUMMARY
+          cat /tmp/gotest.log >> $GITHUB_STEP_SUMMARY
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
             cat /tmp/uitestlog >> $GITHUB_STEP_SUMMARY
           fi
