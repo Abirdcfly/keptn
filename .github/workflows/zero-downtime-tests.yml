@@ -493,7 +493,7 @@ jobs:
         if: always()
         with:
           name: go-test-log
-          path: /tmp/gotest2.log
+          path: /tmp/json.log
           if-no-files-found: error
 
       # Upload the original cypress test log as an artifact for later review.
