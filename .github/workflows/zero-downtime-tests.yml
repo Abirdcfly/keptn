@@ -372,7 +372,7 @@ jobs:
           KEPTN_ENDPOINT: ${{ steps.determine_keptn_endpoint.outputs.KEPTN_ENDPOINT }}
         run: |
           set -euo pipefail 
-          gotestsum --junitfile tmp/gotest.xml -v -run Test_ZeroDowntime -v -timeout 90m  & GOTEST=$!
+          gotestsum --junitfile tmp/gotest.xml -- -v -run Test_ZeroDowntime -v -timeout 45m  & GOTEST=$!
 
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
@@ -390,17 +390,19 @@ jobs:
             exit 1
           fi
           echo "Zero Downtime go test finished"
-      - name: Format go test for issue
+
+      - name: Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
-        run: |
-          set -euo      
-          cat /tmp/gotest.xml 2>&1 | tee /tmp/gotest.log
+        with:
+          files: "tmp/gotest.xml"
+          job_summary: true
 
       - name: Format go test log output
         if: always()
         run: |
           set -euo pipefail
-          cat /tmp/gotest.log | gotestfmt
+          cat /tmp/gotest.xml 2>&1 | gotestfmt
 
       - name: Format cypress log output
         if: always() && github.event.inputs.testUI == 'true'
@@ -421,18 +423,6 @@ jobs:
           echo "* Commit: $GIT_SHA" >> $GITHUB_STEP_SUMMARY
           echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
           echo "" >>$GITHUB_STEP_SUMMARY
-          
-          echo "<details>" > $GITHUB_STEP_SUMMARY
-          cat /tmp/gotest2.log >> $GITHUB_STEP_SUMMARY
-          echo "</details>" > $GITHUB_STEP_SUMMARY
-
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        if: always() && github.event.inputs.testUI == 'true'   # run this step even if previous step failed
-        with:
-          name: JEST Tests            # Name of the check run which will be created
-          path: /tmp/uitest.log  # Path to test results
-          reporter: jest-junit
 
       #######################################################################
       # TEARDOWN
@@ -507,16 +497,8 @@ jobs:
           name: support-archive
           path: support-archive/*.zip
 
-        # Upload the original go test log as an artifact for later review.
-      - name: Upload go test log
-        uses: actions/upload-artifact@v3
-        if: always()
-        with:
-          name: go-test-log
-          path: /tmp/json.log
-          if-no-files-found: error
       # Upload the original go test log as an artifact for later review.
-      - name: Upload go test log 2
+      - name: Upload go test log
         uses: actions/upload-artifact@v3
         if: always()
         with:
@@ -553,12 +535,6 @@ jobs:
         if: always() && steps.test_zero_downtime.outcome != 'success'
         run: |
             echo "ZERO DOWNTIME TESTS FAILED! - Creating GH issue description now..."
-            REPORT=$(cat /tmp/gotest2.log)
-          
-            # adding emojis to test report
-            REPORT=$(echo "${REPORT//pass/:white_check_mark: pass}")
-            REPORT=$(echo "${REPORT//fail/:x: fail}")
-            REPORT=$(echo "${REPORT//skip/:yellow_circle: skip}")
           
             # create a markdown file that contains details about the error
             echo "---" > zd-test-failed.md
