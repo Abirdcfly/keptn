@@ -338,6 +338,9 @@ jobs:
            helm test jmeter-service -n ${{ env.KEPTN_NAMESPACE }}
            helm test helm-service -n ${{ env.KEPTN_NAMESPACE }}
 
+      - name: Set up gotestsum
+        run: |
+         go install gotest.tools/gotestsum@latest 
 
       - name: Set up gotestfmt
         uses: haveyoudebuggedit/gotestfmt-action@v2.0.0
@@ -354,7 +357,7 @@ jobs:
         id: prepare_test_run
         working-directory: test/zero-downtime
         run: |
-         go install github.com/vearutop/teststat@v0.1.3
+        # go install github.com/vearutop/teststat@v0.1.3
          go get ./...
 
       #######################################################################
@@ -370,8 +373,7 @@ jobs:
           KEPTN_ENDPOINT: ${{ steps.determine_keptn_endpoint.outputs.KEPTN_ENDPOINT }}
         run: |
           set -euo pipefail 
-          
-          go test -json -v -run Test_ZeroDowntime -v -timeout 90m > /tmp/json.log & GOTEST=$!
+          gotestsum --junitfile tmp/gotest.xml -v -run Test_ZeroDowntime -v -timeout 90m  & GOTEST=$!
 
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
@@ -393,8 +395,7 @@ jobs:
         if: always()
         run: |
           set -euo      
-          cat /tmp/json.log 2>&1 | tee /tmp/gotest.log
-          teststat -markdown /tmp/json.log | tee /tmp/gotest2.log
+          cat /tmp/gotest.xml 2>&1 | tee /tmp/gotest.log
 
       - name: Format go test log output
         if: always()
@@ -514,6 +515,14 @@ jobs:
         with:
           name: go-test-log
           path: /tmp/json.log
+          if-no-files-found: error
+      # Upload the original go test log as an artifact for later review.
+      - name: Upload go test log 2
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: go-test-log
+          path: /tmp/gotest.xml
           if-no-files-found: error
 
       # Upload the original cypress test log as an artifact for later review.
