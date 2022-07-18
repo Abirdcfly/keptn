@@ -389,6 +389,7 @@ jobs:
             echo "::error::Zero Downtime go test failed - exiting"
             exit 1
           fi
+          cat /tmp/gotest.xml 2>&1 | gotestfmt
           echo "Zero Downtime go test finished"
 
       - name: Publish Test Results
