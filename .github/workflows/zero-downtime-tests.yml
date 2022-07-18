@@ -397,6 +397,7 @@ jobs:
         with:
           files: "tmp/gotest.xml"
           job_summary: true
+          report_individual_runs: true
 
       - name: Format go test log output
         if: always()
