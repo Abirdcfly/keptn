@@ -403,24 +403,24 @@ jobs:
               echo "* Triggered by: Scheduled build" >> $GITHUB_STEP_SUMMARY
            else
               echo "* Triggered by: @$GITHUB_ACTOR" >> $GITHUB_STEP_SUMMARY
-          fi
+           fi
           
-          echo "* Branch: $BRANCH" >> $GITHUB_STEP_SUMMARY
-          echo "* Version: $VERSION" >> $GITHUB_STEP_SUMMARY
-          echo "* Datetime: $DATETIME" >> $GITHUB_STEP_SUMMARY
-          echo "* Commit: $GIT_SHA" >> $GITHUB_STEP_SUMMARY
-          echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
-          echo "" >>$GITHUB_STEP_SUMMARY
-        
-          echo "<details>" > $GITHUB_STEP_SUMMARY
-          cat /tmp/gotest2.log >> $GITHUB_STEP_SUMMARY
-          echo "</details>" > $GITHUB_STEP_SUMMARY
-        
-          if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
+            echo "* Branch: $BRANCH" >> $GITHUB_STEP_SUMMARY
+            echo "* Version: $VERSION" >> $GITHUB_STEP_SUMMARY
+            echo "* Datetime: $DATETIME" >> $GITHUB_STEP_SUMMARY
+            echo "* Commit: $GIT_SHA" >> $GITHUB_STEP_SUMMARY
+            echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
+            echo "" >>$GITHUB_STEP_SUMMARY
+          
             echo "<details>" > $GITHUB_STEP_SUMMARY
-            cat /tmp/uitest.log >> $GITHUB_STEP_SUMMARY
+            cat /tmp/gotest2.log >> $GITHUB_STEP_SUMMARY
             echo "</details>" > $GITHUB_STEP_SUMMARY
-          fi
+          
+            if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
+              echo "<details>" > $GITHUB_STEP_SUMMARY
+              cat /tmp/uitest.log >> $GITHUB_STEP_SUMMARY
+              echo "</details>" > $GITHUB_STEP_SUMMARY
+            fi
 
       - name: Format go test log output
         if: always()
