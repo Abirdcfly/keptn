@@ -358,6 +358,7 @@ jobs:
         working-directory: test/zero-downtime
         run: |
          mkdir ../../temp_res
+         go get -u github.com/jstemmer/go-junit-report 
          go get ./...
 
       #######################################################################
@@ -373,8 +374,9 @@ jobs:
           KEPTN_ENDPOINT: ${{ steps.determine_keptn_endpoint.outputs.KEPTN_ENDPOINT }}
         run: |
           set -euo pipefail 
-          gotestsum --junitfile ../../temp_res/gotest.xml -- -v -run Test_ZeroDowntime -v -timeout 45m & GOTEST=$! >  /tmp/gotest.json
-
+          
+          go test -v -run Test_ZeroDowntime -v -timeout 45m & GOTEST=$! >  /tmp/gotest.log
+          
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
             while [[ $(jobs -pr) ]]; do
@@ -390,7 +392,8 @@ jobs:
             echo "::error::Zero Downtime go test failed - exiting"
             exit 1
           fi
-          echo "Zero Downtime go test finished"
+          echo "Zero Downtime go test finished, storing result"
+          cat /tmp/gotest.log | go-junit-report > ../../temp_res/gotest.xml
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
@@ -404,7 +407,7 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          cat /tmp/gotest.json 2>&1 | gotestfmt
+          go tool test2json /tmp/gotest.log 2>&1 | gotestfmt
 
       - name: Format cypress log output
         if: always() && github.event.inputs.testUI == 'true'
