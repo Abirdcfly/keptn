@@ -406,12 +406,32 @@ jobs:
         if: always() && github.event.inputs.testUI == 'true'
         run: cat /tmp/uitest.log
 
+      - name: Generate Github Summary
+        if: always()
+        run: |
+          if [[ $GITHUB_EVENT_NAME == 'schedule' ]]; then
+             echo "* Triggered by: Scheduled build" >> $GITHUB_STEP_SUMMARY
+          else
+             echo "* Triggered by: @$GITHUB_ACTOR" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          echo "* Branch: $BRANCH" >> $GITHUB_STEP_SUMMARY
+          echo "* Version: $VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "* Datetime: $DATETIME" >> $GITHUB_STEP_SUMMARY
+          echo "* Commit: $GIT_SHA" >> $GITHUB_STEP_SUMMARY
+          echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
+          echo "" >>$GITHUB_STEP_SUMMARY
+          
+          echo "<details>" > $GITHUB_STEP_SUMMARY
+          cat /tmp/gotest2.log >> $GITHUB_STEP_SUMMARY
+          echo "</details>" > $GITHUB_STEP_SUMMARY
+
       - name: Test Report
         uses: dorny/test-reporter@v1
-        if: success() || failure()    # run this step even if previous step failed
+        if: always() && github.event.inputs.testUI == 'true'   # run this step even if previous step failed
         with:
           name: JEST Tests            # Name of the check run which will be created
-          path: /tmp/json.log   # Path to test results
+          path: /tmp/uitest.log  # Path to test results
           reporter: jest-junit
 
       #######################################################################
