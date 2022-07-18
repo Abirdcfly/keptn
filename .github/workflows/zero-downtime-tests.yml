@@ -373,7 +373,7 @@ jobs:
           KEPTN_ENDPOINT: ${{ steps.determine_keptn_endpoint.outputs.KEPTN_ENDPOINT }}
         run: |
           set -euo pipefail 
-          gotestsum --junitfile ../../temp_res/gotest.xml -- -v -run Test_ZeroDowntime -v -timeout 45m & GOTEST=$!
+          gotestsum --junitfile ../../temp_res/gotest.xml -- -v -run Test_ZeroDowntime -v -timeout 45m & GOTEST=$! >  /tmp/gotest.json
 
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
@@ -404,7 +404,7 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          cat temp_res/gotest.xml | gotestfmt
+          cat /tmp/gotest.json 2>&1 | gotestfmt
 
       - name: Format cypress log output
         if: always() && github.event.inputs.testUI == 'true'
