@@ -372,7 +372,7 @@ jobs:
           KEPTN_ENDPOINT: ${{ steps.determine_keptn_endpoint.outputs.KEPTN_ENDPOINT }}
         run: |
           set -euo pipefail 
-          gotestsum --junitfile tmp/gotest.xml -- -v -run Test_ZeroDowntime -v -timeout 45m & GOTEST=$!
+          gotestsum --junitfile /tmp/gotest.xml -- -v -run Test_ZeroDowntime -v -timeout 45m & GOTEST=$!
 
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
@@ -395,7 +395,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
-          files: "tmp/gotest.xml"
+          files: "/tmp/gotest.xml"
           job_summary: true
           report_individual_runs: true
 
