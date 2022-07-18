@@ -357,6 +357,7 @@ jobs:
         id: prepare_test_run
         working-directory: test/zero-downtime
         run: |
+         mkdir ../../temp_res
          go get ./...
 
       #######################################################################
@@ -372,7 +373,7 @@ jobs:
           KEPTN_ENDPOINT: ${{ steps.determine_keptn_endpoint.outputs.KEPTN_ENDPOINT }}
         run: |
           set -euo pipefail 
-          gotestsum --junitfile /tmp/gotest.xml -- -v -run Test_ZeroDowntime -v -timeout 45m & GOTEST=$!
+          gotestsum --junitfile ../../temp_res/gotest.xml -- -v -run Test_ZeroDowntime -v -timeout 45m & GOTEST=$!
 
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
@@ -389,14 +390,13 @@ jobs:
             echo "::error::Zero Downtime go test failed - exiting"
             exit 1
           fi
-          cat /tmp/gotest.xml 2>&1 | gotestfmt
           echo "Zero Downtime go test finished"
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
         with:
-          files: "/tmp/gotest.xml"
+          files: "temp_res/gotest.xml"
           job_summary: true
           report_individual_runs: true
 
@@ -404,7 +404,7 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          cat /tmp/gotest.xml 2>&1 | gotestfmt
+          cat temp_res/gotest.xml | gotestfmt
 
       - name: Format cypress log output
         if: always() && github.event.inputs.testUI == 'true'
@@ -505,7 +505,7 @@ jobs:
         if: always()
         with:
           name: go-test-log
-          path: /tmp/gotest.xml
+          path: temp_res/gotest.xml
           if-no-files-found: error
 
       # Upload the original cypress test log as an artifact for later review.
