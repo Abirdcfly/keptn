@@ -372,7 +372,7 @@ jobs:
           KEPTN_ENDPOINT: ${{ steps.determine_keptn_endpoint.outputs.KEPTN_ENDPOINT }}
         run: |
           set -euo pipefail 
-          gotestsum --junitfile tmp/gotest.xml -- -v -run Test_ZeroDowntime -v -timeout 45m  & GOTEST=$!
+          gotestsum --junitfile tmp/gotest.xml -- -v -run Test_ZeroDowntime -v -timeout 45m & GOTEST=$!
 
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
@@ -385,7 +385,7 @@ jobs:
           fi
         
           wait $GOTEST
-          if [[ $GOTEST? -ne 0 ]]; then
+          if [[ $? -ne 0 ]]; then
             echo "::error::Zero Downtime go test failed - exiting"
             exit 1
           fi
