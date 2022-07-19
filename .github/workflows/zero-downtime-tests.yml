@@ -436,8 +436,8 @@ jobs:
           echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
           echo "" >>$GITHUB_STEP_SUMMARY
           
-          echo "Test Failed:"
-          echo "  Failed:  ${{ fromJson(steps.test-results.outputs.test.results).failed }}" >> $GITHUB_STEP_SUMMARY
+          echo "  Failed:  ${{ steps.test-results.outputs.test.results }}"
+          echo "  Failed:  ${{ fromJson(steps.test-results.outputs.test.results) }}"
       #######################################################################
       # TEARDOWN
       #######################################################################
