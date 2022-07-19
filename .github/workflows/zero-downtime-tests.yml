@@ -414,7 +414,7 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          cat ../../temp_res/gotest.log 2>&1 | gotestfmt
+          cat temp_res/gotest.log 2>&1 | gotestfmt
 
       - name: Format cypress log output
         if: always() && github.event.inputs.testUI == 'true'
@@ -437,7 +437,7 @@ jobs:
           echo "" >>$GITHUB_STEP_SUMMARY
           
           echo "Test Failed:"
-          echo "  Failed:  ${{ fromJson(steps.test-results.outputs.test.results).failed }}" >>$GITHUB_STEP_SUMMARY
+          echo "  Failed:  ${{ fromJson(steps.test-results.outputs.test.results).failed }}" >> $GITHUB_STEP_SUMMARY
       #######################################################################
       # TEARDOWN
       #######################################################################
