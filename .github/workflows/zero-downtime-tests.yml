@@ -389,7 +389,7 @@ jobs:
             exit 1
           fi
           echo "Zero Downtime go test finished, storing result"
-          cat /tmp/gotest.log | go-junit-report > ../temp_res/gotest.xml
+          cat /tmp/gotest.log | go-junit-report -parser gojson > ../temp_res/gotest.xml
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
