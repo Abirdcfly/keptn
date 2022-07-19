@@ -362,7 +362,7 @@ jobs:
       #######################################################################
 
       - name: Zero Downtime Tests
-        timeout-minutes: 50
+        timeout-minutes: 30
         working-directory: test/zero-downtime
         id: test_zero_downtime
         env:
@@ -371,7 +371,7 @@ jobs:
         run: |
           set -euo pipefail 
           
-          go test -v -json -run Test_ZeroDowntime -timeout 45m > ../../temp_res/gotest.log & GOTEST=$!
+          go test -v -json -run Test_ZeroDowntime -timeout 25m > ../../temp_res/gotest.log & GOTEST=$!
           
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
