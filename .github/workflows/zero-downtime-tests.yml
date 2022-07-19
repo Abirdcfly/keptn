@@ -398,6 +398,10 @@ jobs:
           files: "temp_res/gotest.xml"
           job_summary: true
           report_individual_runs: true
+          check_name: "Zero Downtime Test Results"
+          fail_on: "errors"
+          check_run_annotations: "all tests"
+          deduplicate_classes_by_file_name: true
 
       - name: Format go test log output
         if: always()
@@ -506,6 +510,8 @@ jobs:
           name: go-test-log
           path: temp_res/gotest.xml
           if-no-files-found: error
+
+
 
       # Upload the original cypress test log as an artifact for later review.
       - name: Upload cypress test log
