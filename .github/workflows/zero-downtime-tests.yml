@@ -435,7 +435,7 @@ jobs:
           echo "* Commit: $GIT_SHA" >> $GITHUB_STEP_SUMMARY
           echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
           echo "" >>$GITHUB_STEP_SUMMARY
-          
+          echo "  Passed:  ${{ fromJson(steps.test-results.outputs.test.results).passed }}" >> $GITHUB_STEP_SUMMARY 
           echo "  Failed:  ${{ steps.test-results.outputs.test.results }}" >>$GITHUB_STEP_SUMMARY
       #######################################################################
       # TEARDOWN
