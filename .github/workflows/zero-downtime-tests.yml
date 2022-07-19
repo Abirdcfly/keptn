@@ -391,6 +391,13 @@ jobs:
           echo "Zero Downtime go test finished, storing result"
           go-junit-report -in ../temp_res/gotest.log -parser gojson -out ../temp_res/gotest.xml -set-exit-code
 
+      - name: Parse Test Results
+        uses: zestia/junit-results-toolkit@v1
+        id: test-results
+        if: always()
+        with:
+          files: 'temp_res/*.xml'
+
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
@@ -431,7 +438,9 @@ jobs:
           
            echo "try ${{ fromJSON( temp_res/gotest.log).test }}"
            echo "and ${{ fromJSON( temp_res/gotest.xml).testcase }}"
-
+          
+          echo "Test Failed:"
+          echo "  Failed:  ${{ fromJson(steps.test-results.outputs.test.results).failed }}" >>$GITHUB_STEP_SUMMARY
       #######################################################################
       # TEARDOWN
       #######################################################################
@@ -513,8 +522,6 @@ jobs:
           name: go-test-log
           path: temp_res/gotest.xml
           if-no-files-found: error
-
-
 
       # Upload the original cypress test log as an artifact for later review.
       - name: Upload cypress test log
