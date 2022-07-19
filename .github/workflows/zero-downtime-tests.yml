@@ -354,7 +354,7 @@ jobs:
         working-directory: test/zero-downtime
         run: |
          mkdir ../../temp_res
-         go install github.com/jstemmer/go-junit-report/v2@latest
+         go install github.com/jstemmer/go-junit-report/v2@v2.0.0
          go get ./...
 
       #######################################################################
@@ -389,7 +389,7 @@ jobs:
             exit 1
           fi
           echo "Zero Downtime go test finished, storing result"
-          cat /tmp/gotest.log | go-junit-report -parser gojson > ../temp_res/gotest.xml
+          go-junit-report -in /tmp/gotest.log -parser gojson -out ../temp_res/gotest.xml -set-exit-code
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
