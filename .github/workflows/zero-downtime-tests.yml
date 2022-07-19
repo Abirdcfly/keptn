@@ -389,7 +389,7 @@ jobs:
             exit 1
           fi
           echo "Zero Downtime go test finished, storing result"
-          go-junit-report -in ../../temp_res/gotest.log -parser gojson -out ../temp_res/gotest.xml -set-exit-code
+          go-junit-report -in ../temp_res/gotest.log -parser gojson -out ../temp_res/gotest.xml -set-exit-code
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
@@ -428,6 +428,9 @@ jobs:
           echo "* Commit: $GIT_SHA" >> $GITHUB_STEP_SUMMARY
           echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
           echo "" >>$GITHUB_STEP_SUMMARY
+          
+           echo "try ${{ fromJSON( temp_res/gotest.log).test }}"
+           echo "and ${{ fromJSON( temp_res/gotest.xml).testcase }}"
 
       #######################################################################
       # TEARDOWN
