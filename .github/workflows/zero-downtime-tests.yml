@@ -358,7 +358,7 @@ jobs:
         working-directory: test/zero-downtime
         run: |
          mkdir ../../temp_res
-         go install github.com/jstemmer/go-junit-report/v2@V2.0.0
+         go install github.com/jstemmer/go-junit-report@v2.0.0
          go get ./...
 
       #######################################################################
