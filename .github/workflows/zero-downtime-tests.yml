@@ -371,7 +371,7 @@ jobs:
         run: |
           set -euo pipefail 
           
-          go test -v -json -run Test_ZeroDowntime -timeout 45m > /tmp/gotest.log & GOTEST=$!
+          go test -v -json -run Test_ZeroDowntime -timeout 45m > ../../temp_res/gotest.log & GOTEST=$!
           
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
@@ -389,7 +389,7 @@ jobs:
             exit 1
           fi
           echo "Zero Downtime go test finished, storing result"
-          go-junit-report -in /tmp/gotest.log -parser gojson -out ../temp_res/gotest.xml -set-exit-code
+          go-junit-report -in ../../temp_res/gotest.log -parser gojson -out ../temp_res/gotest.xml -set-exit-code
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
@@ -403,7 +403,7 @@ jobs:
         if: always()
         run: |
           set -euo pipefail
-          /tmp/gotest.log 2>&1 | gotestfmt
+          cat ../../temp_res/gotest.log 2>&1 | gotestfmt
 
       - name: Format cypress log output
         if: always() && github.event.inputs.testUI == 'true'
