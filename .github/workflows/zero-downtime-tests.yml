@@ -340,7 +340,7 @@ jobs:
 
       - name: Set up gotestsum
         run: |
-         go install gotest.tools/gotestsum@latest 
+         go install gotest.tools/gotestsum@v1.8.1
 
       - name: Set up gotestfmt
         uses: haveyoudebuggedit/gotestfmt-action@v2.0.0
@@ -358,7 +358,7 @@ jobs:
         working-directory: test/zero-downtime
         run: |
          mkdir ../../temp_res
-         go get -u github.com/jstemmer/go-junit-report 
+         go install github.com/jstemmer/go-junit-report/v2@V2.0.0
          go get ./...
 
       #######################################################################
@@ -380,7 +380,7 @@ jobs:
           cd ../../bridge &&
           if [[ "${{ github.event.inputs.testUI }}" == 'true' ]]; then
             while [[ $(jobs -pr) ]]; do
-              echo "New Run: "  >> /tmp/uitest.log 
+              echo "New Run: " >> /tmp/uitest.log 
               npm run test:ui >> /tmp/uitest.log 2>&1 
             done
           else
@@ -393,7 +393,7 @@ jobs:
             exit 1
           fi
           echo "Zero Downtime go test finished, storing result"
-          cat /tmp/gotest.log | go-junit-report > ../../temp_res/gotest.xml
+          cat /tmp/gotest.log | go-junit-report > ../temp_res/gotest.xml
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
