@@ -338,10 +338,6 @@ jobs:
            helm test jmeter-service -n ${{ env.KEPTN_NAMESPACE }}
            helm test helm-service -n ${{ env.KEPTN_NAMESPACE }}
 
-      - name: Set up gotestsum
-        run: |
-         go install gotest.tools/gotestsum@v1.8.1
-
       - name: Set up gotestfmt
         uses: haveyoudebuggedit/gotestfmt-action@v2.0.0
         with:
@@ -358,7 +354,7 @@ jobs:
         working-directory: test/zero-downtime
         run: |
          mkdir ../../temp_res
-         go install github.com/jstemmer/go-junit-report@v2.0.0
+         go install github.com/jstemmer/go-junit-report/v2@latest
          go get ./...
 
       #######################################################################
