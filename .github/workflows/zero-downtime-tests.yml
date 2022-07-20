@@ -410,6 +410,12 @@ jobs:
           check_run_annotations: "all tests"
           deduplicate_classes_by_file_name: true
 
+      - name: Retrieve Report
+        uses: actions/download-artifact@v3
+
+      - name: Display structure of downloaded files
+        run: ls -R
+
       - name: Format go test log output
         if: always()
         run: |
@@ -435,8 +441,7 @@ jobs:
           echo "* Commit: $GIT_SHA" >> $GITHUB_STEP_SUMMARY
           echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
           echo "" >>$GITHUB_STEP_SUMMARY
-          echo "  Passed:  ${{ fromJson(steps.test-results.outputs.test.results).passed }}" >> $GITHUB_STEP_SUMMARY 
-          echo "  Failed:  ${{ steps.test-results.outputs.test.results }}" >>$GITHUB_STEP_SUMMARY
+
       #######################################################################
       # TEARDOWN
       #######################################################################
