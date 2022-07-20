@@ -404,6 +404,10 @@ jobs:
           paths: 'temp_res/*.xml'
         if: always()
 
+      - name: Generate Markdown Test Report
+        run: |
+          npx tablemark-cli@v2.0.0 "temp_res/gotest.log" > "zd-test-failed.md" -N -c Test
+
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
         if: always()
