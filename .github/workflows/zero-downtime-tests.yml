@@ -410,6 +410,9 @@ jobs:
           check_run_annotations: "all tests"
           deduplicate_classes_by_file_name: true
 
+      - name: Display files before
+        run: ls -R
+
       - name: Retrieve Report
         uses: actions/download-artifact@v3
 
