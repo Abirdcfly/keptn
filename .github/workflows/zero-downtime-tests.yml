@@ -398,6 +398,11 @@ jobs:
         if: always()
         with:
           files: 'temp_res/*.xml'
+      - name: Test Summary
+        uses: test-summary/action@v1
+        with:
+          paths: 'temp_res/*.xml'
+        if: always()
 
       - name: Publish Test Results
         uses: EnricoMi/publish-unit-test-result-action@v1
