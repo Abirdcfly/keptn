@@ -220,6 +220,7 @@ jobs:
     needs: prepare_ci_run
     runs-on: ubuntu-20.04
     steps:
+
       - name: Create build config file
         env:
           BRANCH: ${{ needs.prepare_ci_run.outputs.BRANCH }}
@@ -253,34 +254,63 @@ jobs:
     if: needs.prepare_ci_run.outputs.BUILD_MATRIX_EMPTY == 'false'
     strategy:
       matrix: ${{ fromJson(needs.prepare_ci_run.outputs.BUILD_MATRIX) }}
+      fail-fast: false # TODO remove this after all test pass
     env:
       BRANCH: ${{ needs.prepare_ci_run.outputs.BRANCH }}
       VERSION: ${{ needs.prepare_ci_run.outputs.VERSION }}
       DATETIME: ${{ needs.prepare_ci_run.outputs.DATE }}${{ needs.prepare_ci_run.outputs.TIME }}
       GIT_SHA: ${{ needs.prepare_ci_run.outputs.GIT_SHA }}
     steps:
-      - name: Checkout Code
+      - name: Check out code.
         uses: actions/checkout@v3
 
-      - name: Setup gotestsum
-        uses: autero1/action-gotestsum@v1.0.0
+      - name: Set up Go 1.x
+        if: matrix.config.artifact != 'bridge2'
+        uses: actions/setup-go@v3
         with:
-          gotestsum_version: 1.8.1
+          go-version: ${{ env.GO_VERSION }}
 
-      - name: Test ${{ matrix.config.artifact }}
-        if: ((needs.prepare_ci_run.outputs.BUILD_EVERYTHING == 'true') || (matrix.config.should-run == 'true'))
-        env:
-           PATH_TO_SERVICE : ${{ matrix.config.artifact }}
+      - name: Set up gotestsum
+        if: matrix.config.artifact != 'bridge2'
+        run: go install gotest.tools/gotestsum@v1.8.1
+
+      - name: Test ${{ matrix.config.artifact }} # TODO add back -race
+        if: matrix.config.artifact != 'bridge2' && ((needs.prepare_ci_run.outputs.BUILD_EVERYTHING == 'true') || (matrix.config.should-run == 'true'))
+        working-directory: ./${{ matrix.config.artifact}}
         run: |
-          cd $PATH_TO_SERVICE 
-          gotestsum --no-color=false -- -race -v ./... 
+          go mod download
+          gotestsum --no-color=false --format=testname -- -v ./... 
 
-      - name: Report test coverage for ${{ matrix.config.artifact }}
-        if: matrix.config.should-push-image == 'true'
-        uses: codecov/codecov-action@v3
-        with:
-          fail_ci_if_error: false
-          flags: ${{ matrix.config.artifact }}
+    #######################################################################
+          # TESTS FOR BRIDGE
+    #######################################################################
+      - name: Install yarn
+        if: matrix.config.artifact == 'bridge2'
+        working-directory: bridge
+        run: |
+          if [[ '${{ matrix.config.docker-test-target }}' == 'bridge-server-test' ]]; then
+            cd ./server 
+          fi
+          yarn install --frozen-lockfile 
+
+      - name: Bridge lint checks
+        if: matrix.config.artifact == 'bridge2' && matrix.config.docker-test-target == 'builder-code-style'
+        working-directory: bridge
+        run: yarn prettier:check && yarn lint:check
+
+      - name: UI-Test
+        if: matrix.config.docker-test-target == 'builder-test-ui'
+        run: |
+         ./cypress/run-tests.sh   
+
+      - name: Bridge unit test
+        if: matrix.config.artifact == 'bridge2' && matrix.config.docker-test-target != 'builder-test-ui'
+        working-directory: bridge
+        run: |
+          if [[ '${{ matrix.config.docker-test-target }}' == 'bridge-server-test' ]]; then
+            cd ./server 
+          fi
+          yarn test
 
       - name: Report test coverage for bridge-server
         if: matrix.config.should-push-image == 'false' && matrix.config.artifact == 'bridge2' && matrix.config.docker-test-target == 'bridge-server-test'
@@ -295,6 +325,18 @@ jobs:
         with:
           name: bridge-e2e-screenshots
           path: ./shared/screenshots
+
+    # REPORT COVERAGE
+      - name: Report test coverage for ${{ matrix.config.artifact }}
+        if: matrix.config.should-push-image == 'true'
+        uses: codecov/codecov-action@v3
+        with:
+            fail_ci_if_error: false
+            flags: ${{ matrix.config.artifact }}
+
+    #######################################################################
+    # BUILD PRODUCTION IMAGES
+    #######################################################################
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
