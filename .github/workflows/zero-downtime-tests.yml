@@ -440,7 +440,7 @@ jobs:
           echo "* Commit: $GIT_SHA" >> $GITHUB_STEP_SUMMARY
           echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
           echo "" >>$GITHUB_STEP_SUMMARY
-          cat test-report-zd-test >>$GITHUB_STEP_SUMMARY
+          cat test-report-zd-test/test-report.html >>$GITHUB_STEP_SUMMARY
 
       #######################################################################
       # TEARDOWN
