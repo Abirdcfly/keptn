@@ -386,6 +386,7 @@ jobs:
           wait $GOTEST
           if [[ $? -ne 0 ]]; then
             echo "::error::Zero Downtime go test failed - exiting"
+            go-junit-report -in ../temp_res/gotest.log -parser gojson -out ../temp_res/gotest.xml -set-exit-code
             exit 1
           fi
           echo "Zero Downtime go test finished, storing result"
@@ -411,12 +412,15 @@ jobs:
           deduplicate_classes_by_file_name: true
 
       - name: Display files before
+        if: always()
         run: ls -R
 
       - name: Retrieve Report
+        if: always()
         uses: actions/download-artifact@v3
 
       - name: Display structure of downloaded files
+        if: always()
         run: ls -R
 
       - name: Format go test log output
