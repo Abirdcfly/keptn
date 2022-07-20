@@ -440,7 +440,7 @@ jobs:
           echo "* Commit: $GIT_SHA" >> $GITHUB_STEP_SUMMARY
           echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
           echo "" >>$GITHUB_STEP_SUMMARY
-          cat test-report-zd-test/test-report.html >>$GITHUB_STEP_SUMMARY
+
 
       #######################################################################
       # TEARDOWN
@@ -575,6 +575,7 @@ jobs:
             echo "* Upgraded to: $UPGRADE_HELM_CHART" >> zd-test-failed.md
             echo "" >> zd-test-failed.md
           
+            cat test-report-zd-test/test-report.html >> zd-test-failed.md 
             # print report
             echo "$REPORT" >> zd-test-failed.md
           
