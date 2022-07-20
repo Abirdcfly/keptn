@@ -411,17 +411,9 @@ jobs:
           check_run_annotations: "all tests"
           deduplicate_classes_by_file_name: true
 
-      - name: Display files before
-        if: always()
-        run: ls -R
-
       - name: Retrieve Report
         if: always()
         uses: actions/download-artifact@v3
-
-      - name: Display structure of downloaded files
-        if: always()
-        run: ls -R
 
       - name: Format go test log output
         if: always()
@@ -448,6 +440,7 @@ jobs:
           echo "* Commit: $GIT_SHA" >> $GITHUB_STEP_SUMMARY
           echo "* Upgraded to: $UPGRADE_HELM_CHART" >> $GITHUB_STEP_SUMMARY
           echo "" >>$GITHUB_STEP_SUMMARY
+          cat test-report-zd-test >>$GITHUB_STEP_SUMMARY
 
       #######################################################################
       # TEARDOWN
